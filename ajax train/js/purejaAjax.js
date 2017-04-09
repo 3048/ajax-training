@@ -21,17 +21,29 @@ function ajax(ajaxOptions) {
 			return false;
 		}
 	}
-	
-	
+
+
 	var httpReq = new XMLHttpRequest();
 	httpReq.open(options.type, options.url, true);
 
 	httpReq.onreadystatechange = function () {
-		
-		if(httpSuccess(httpReq)) {
-			console.log('działa');
-		}
 
+		if (httpReq.readyState == 4) {
+
+			if (httpSuccess(httpReq) && httpReq.readyState == 4) {
+
+				if (httpReq.readyState)
+
+					var returnData = (options.dataType == 'xml') ? httpReq.responseXML : httpReq.responseText;
+
+				options.onSuccess(returnData);
+
+
+			} else {
+				options.onError(httpReq.statusText);
+			}
+
+		}
 	}
 
 
@@ -43,8 +55,12 @@ function ajax(ajaxOptions) {
 ajax({
 	type: 'GET',
 	url: 'http://echo.jsontest.com/userId/108/userName/Akademia108/userURL/akademia108.pl',
-	onSuccess: function () {
-		console.log('hurra');
+	onSuccess: function (response) {
+		console.log('hurra! Pobrałem dane' + response);
+	},
+	onError: function (status) {
+		alert('Połączenie o statusie' + status);
+
 	}
 
 });
